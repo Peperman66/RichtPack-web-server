@@ -18,91 +18,86 @@ server.on('request', (request, response) => {
         //Special requests
         try {
             if (req.url === '/webhook') {
-                if (req.method === 'GET') {
-                    let data = '';
-                    if (req.headers.type === 'getInfoOfWebhook') {
-                        https.get(eval('webhookurl.' + req.headers.channel), (newRes) => {
-                            let data2 = '';
-                            newRes.on('data', (chunk) => { data2 += chunk });
-                            newRes.on('end', () => {
-                                res.writeHead(200, { 'Content-Type': 'application/json' });
-                                res.end(decodeURIComponent(data2));
-                            });
-                        })
-                        finished = true;
-                    } else {
-                        res.writeHead(200, { 'Content-Type': 'text/html' });
-                        res.end(fs.readFileSync('webhook.html'));
-                        finished = true;
-                    }
+                let data = '';
+                if (req.headers.type === 'getInfoOfWebhook') {
+                    https.get(eval('webhookurl.' + req.headers.channel), (newRes) => {
+                        let data2 = '';
+                        newRes.on('data', (chunk) => { data2 += chunk });
+                        newRes.on('end', () => {
+                            res.writeHead(200, { 'Content-Type': 'application/json' });
+                            res.end(decodeURIComponent(data2));
+                        });
+                    })
+                    finished = true;
+                } else {
+                    res.writeHead(200, { 'Content-Type': 'text/html' });
+                    res.end(fs.readFileSync('webhook.html'));
+                    finished = true;
                 }
             } else if (req.url === '/webhook') {
-                if (req.method === 'GET') {
-                    let data = '';
-                    if (req.headers.type === 'getInfoOfWebhook') {
-                        https.get(eval('webhookurl.' + req.headers.channel), (newRes) => {
-                            let data2 = '';
-                            newRes.on('data', (chunk) => { data2 += chunk });
-                            newRes.on('end', () => {
-                                res.writeHead(200, { 'Content-Type': 'application/json' });
-                                res.end(decodeURIComponent(data2));
-                            });
-                        })
-                        finished = true;
-                    } else {
-                        res.writeHead(200, { 'Content-Type': 'text/html' });
-                        res.end(fs.readFileSync('webhook.html'));
-                        finished = true;
-                    }
+                let data = '';
+                if (req.headers.type === 'getInfoOfWebhook') {
+                    https.get(eval('webhookurl.' + req.headers.channel), (newRes) => {
+                        let data2 = '';
+                        newRes.on('data', (chunk) => { data2 += chunk });
+                        newRes.on('end', () => {
+                            res.writeHead(200, { 'Content-Type': 'application/json' });
+                            res.end(decodeURIComponent(data2));
+                        });
+                    })
+                    finished = true;
+                } else {
+                    res.writeHead(200, { 'Content-Type': 'text/html' });
+                    res.end(fs.readFileSync('webhook.html'));
+                    finished = true;
                 }
             }
 
             //Normal requests
-            if (request.method === 'GET'){
-                if (fs.existsSync(`.${path.sep}src${request.url.replace("/", path.sep)}${path.sep}index.html`)) {
+            if (fs.existsSync(`.${path.sep}src${request.url.replace("/", path.sep)}${path.sep}index.html`)) {
+                found = true;
+                let file = fs.readFileSync(`.${path.sep}src${request.url.replace("/", path.sep)}${path.sep}index.html`);
+                response.writeHead(200, { 'Content-Type': 'text/html', 'Content-Length': file.byteLength});
+                response.end(file);
+                finished = true;
+
+                console.log("-----------------------\nIncomming Connection!\n-----------------------\n" + request.connection.remoteAddress + " " + new Date());
+
+            } else if (fs.existsSync(`.${path.sep}src${request.url.replace("/", path.sep)}`)) {
+                if (request.url.endsWith('.html')) {
                     found = true;
-                    response.writeHead(200, { 'Content-Type': 'text/html' });
-                    response.end(fs.readFileSync(`.${path.sep}src${request.url.replace("/", path.sep)}${path.sep}index.html`));
-                    finished = true;
-
-                    console.log("-----------------------\nIncomming Connection!\n-----------------------\n" + request.connection.remoteAddress + " " + new Date());
-
-                } else if (fs.existsSync(`.${path.sep}src${request.url.replace("/", path.sep)}`)) {
-                    if (request.url.endsWith('.html')) {
-                        found = true;
-                        let file = fs.readFileSync(`.${path.sep}src${request.url.replace("/", path.sep)}`)
-                        response.writeHead(200, { 'Content-Type': 'text/html', 'Content-Length': file.byteLength});
-                        response.end(file);
-                        finished = true;
-                    } else if (request.url.endsWith('.js')) {
-                        found = true;
-                        let file = fs.readFileSync(`.${path.sep}src${request.url.replace("/", path.sep)}`)
-                        response.writeHead(200, { 'Content-Type': 'text/javascript', 'Content-Length': file.byteLength });
-                        response.end(file);
-                        finished = true;
-                    } else if (request.url.endsWith('.css')) {
-                        found = true;
-                        let file = fs.readFileSync(`.${path.sep}src${request.url.replace("/", path.sep)}`)
-                        response.writeHead(200, { 'Content-Type': 'text/css', 'Content-Length': file.byteLength });
-                        response.end(file);
-                        finished = true;
-                    } else if (request.url.endsWith('.zip')) {
-                        found = true;
-                        let file = fs.readFileSync(`.${path.sep}src${request.url.replace("/", path.sep)}`)
-                        response.writeHead(200, { 'Content-Type': 'application/zip', 'Content-Length': file.byteLength });
-                        response.end(file);
-                        finished = true;
-                    }
-                    console.log("-----------------------\nIncomming Connection!\n-----------------------\n" + request.connection.remoteAddress + " " + new Date());
-
-                } else if (fs.existsSync(`.${path.sep}src${request.url.replace("/", path.sep)}.html`)) {
-                    found = true;
-                    let file = fs.readFileSync(`.${path.sep}src${request.url.replace("/", path.sep)}.html`)
-                    response.writeHead(200, { 'Content-Type': 'text/html', 'Content-Length': file.byteLength });
+                    let file = fs.readFileSync(`.${path.sep}src${request.url.replace("/", path.sep)}`)
+                    response.writeHead(200, { 'Content-Type': 'text/html', 'Content-Length': file.byteLength});
                     response.end(file);
                     finished = true;
-                    console.log("-----------------------\nIncomming Connection!\n-----------------------\n" + request.connection.remoteAddress + " " + new Date());
+                } else if (request.url.endsWith('.js')) {
+                    found = true;
+                    let file = fs.readFileSync(`.${path.sep}src${request.url.replace("/", path.sep)}`)
+                    response.writeHead(200, { 'Content-Type': 'text/javascript', 'Content-Length': file.byteLength });
+                    response.end(file);
+                    finished = true;
+                } else if (request.url.endsWith('.css')) {
+                    found = true;
+                    let file = fs.readFileSync(`.${path.sep}src${request.url.replace("/", path.sep)}`)
+                    response.writeHead(200, { 'Content-Type': 'text/css', 'Content-Length': file.byteLength });
+                    response.end(file);
+                    finished = true;
+                } else if (request.url.endsWith('.zip')) {
+                    found = true;
+                    let file = fs.readFileSync(`.${path.sep}src${request.url.replace("/", path.sep)}`)
+                    response.writeHead(200, { 'Content-Type': 'application/zip', 'Content-Length': file.byteLength });
+                    response.end(file);
+                    finished = true;
                 }
+                console.log("-----------------------\nIncomming Connection!\n-----------------------\n" + request.connection.remoteAddress + " " + new Date());
+
+            } else if (fs.existsSync(`.${path.sep}src${request.url.replace("/", path.sep)}.html`)) {
+                found = true;
+                let file = fs.readFileSync(`.${path.sep}src${request.url.replace("/", path.sep)}.html`)
+                response.writeHead(200, { 'Content-Type': 'text/html', 'Content-Length': file.byteLength });
+                response.end(file);
+                finished = true;
+                console.log("-----------------------\nIncomming Connection!\n-----------------------\n" + request.connection.remoteAddress + " " + new Date());
             }
         } catch (err) {
             console.error(err);
@@ -125,7 +120,51 @@ server.on('request', (request, response) => {
             });
         }
 
+    } else if (request.method === 'HEAD') {
+        if (fs.existsSync(`.${path.sep}src${request.url.replace("/", path.sep)}${path.sep}index.html`)) {
+            found = true;
+            response.writeHead(200, { 'Content-Type': 'text/html', 'Content-Length': file.byteLength });
+            response.end();
+            finished = true;
+
+            console.log("-----------------------\nIncomming Connection!\n-----------------------\n" + request.connection.remoteAddress + " " + new Date());
+
+        } else if (fs.existsSync(`.${path.sep}src${request.url.replace("/", path.sep)}`)) {
+            if (request.url.endsWith('.html')) {
+                found = true;
+                response.writeHead(200, { 'Content-Type': 'text/html', 'Content-Length': file.byteLength });
+                response.end();
+                finished = true;
+            } else if (request.url.endsWith('.js')) {
+                found = true;
+                response.writeHead(200, { 'Content-Type': 'text/javascript', 'Content-Length': file.byteLength });
+                response.end();
+                finished = true;
+            } else if (request.url.endsWith('.css')) {
+                found = true;
+                response.writeHead(200, { 'Content-Type': 'text/css', 'Content-Length': file.byteLength });
+                response.end();
+                finished = true;
+            } else if (request.url.endsWith('.zip')) {
+                found = true;
+                response.writeHead(200, { 'Content-Type': 'application/zip', 'Content-Length': file.byteLength });
+                response.end();
+                finished = true;
+            }
+            console.log("-----------------------\nIncomming Connection!\n-----------------------\n" + request.connection.remoteAddress + " " + new Date());
+
+        } else if (fs.existsSync(`.${path.sep}src${request.url.replace("/", path.sep)}.html`)) {
+            found = true;
+            response.writeHead(200, { 'Content-Type': 'text/html', 'Content-Length': file.byteLength });
+            response.end();
+            finished = true;
+            console.log("-----------------------\nIncomming Connection!\n-----------------------\n" + request.connection.remoteAddress + " " + new Date());
+        } else {
+            finished = true;
+            found = false;
+        }
     }
+
     if (!finished) {
         if (!found) {
             response.writeHead(404);
