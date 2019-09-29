@@ -1,0 +1,66 @@
+﻿<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8" />
+    <title>Webhook</title>
+    <script>
+        function getWebhook() {
+            let request = {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    'type': 'getInfoOfWebhook',
+                    'channel': document.getElementsByName('channel')[0].value
+                }
+            }
+            fetch(window.location, request)
+                .then((res) => {
+                    console.log(res);
+                    return res.json();
+                })
+                .then((data) => submitWebhook(data))
+                .catch((err) => console.error(err));
+        }
+        function submitWebhook(data) {
+            let form = document.getElementsByName('form')[0];
+            let content = `${form[0].value}\n${'%2B'}${form[1].value}: ${form[2].value}MB\n-Java: ${form[3].value}MB`
+            let formdata = `content=${content}&username=${form[4].value}&avatar_url=${form[5].value}&tts=${form[6].checked}`
+            console.log(form);
+            let url = 'https://discordapp.com/api/webhooks/' + data.id + '/' + data.token;
+            let request = {
+                method: 'POST',
+                mode: 'no-cors',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: formdata
+            }
+            fetch(url, request)
+                .then((res) => {
+                    document.getElementById('confirm').innerText = 'Hotovo!';
+                    setTimeout(() => {
+                        document.getElementById('confirm').innerText = '';
+                    }, 10000)
+                })
+                .catch((err) => console.error(err));
+        }
+    </script>
+</head>
+<body>
+    <select name="channel">
+        <optgroup label="Tvorba">
+            <option value="testy">testy</option>
+        </optgroup>
+    </select>
+    <form name="form">
+        <input type="text" name="header" placeholder="20. Test"> <br />
+        +<input type="text" name="modsadded" placeholder="Forge"/>: <input type="number" name="ram1" placeholder="200"/>MB <br />
+        -Java: <input type="number" name="ram2" placeholder="75"/>MB <br />
+        <input type="text" name="username" placeholder="Username" /> <br />
+        <input type="hidden" name="avatar_url" placeholder="Avatar_url" /> <br />
+        <input type="button" onclick="getWebhook()" value="Send!"/> <br />
+    </form>
+    <div id="confirm"></div>
+</body>
+</html>

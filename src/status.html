@@ -1,0 +1,93 @@
+﻿<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8" />
+    <title>Webhook</title>
+    <script>
+        function getWebhook() {
+            let request = {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    'type': 'getInfoOfWebhook',
+                    'channel': document.getElementsByName('channel')[0].value
+                }
+            }
+            fetch(window.location, request)
+                .then((res) => {
+                    console.log(res);
+                    return res.json();
+                })
+                .then((data) => submitWebhook(data))
+                .catch((err) => console.error(err));
+        }
+        function submitWebhook(data) {
+            let ok = true;
+            let form = document.getElementsByName('form')[0];
+            let content = ``;
+            if (form[0].checked == true && form[1].checked == true) {
+                content = `Mc Server i Web Server jsou `;
+            } else if (form[0].checked == true && form[1].checked == false) {
+                content = `Mc Server je `;
+            } else if (form[0].checked == false && form[1].checked == true) {
+                content = `Web Server je `;
+            } else {
+                document.getElementById('confirm').innerText = 'Prosím zaškrtni alespoň jednu možnost!';
+                    setTimeout(() => {
+                        document.getElementById('confirm').innerText = '';
+                    }, 10000);
+                    ok = false;
+            }
+
+            if (form[2].checked == true && form[3].checked == false) {
+                content += `offline!`;
+            } else if (form[2].checked == false && form[3].checked == true) {
+                content += `online!`;
+            } else {
+                document.getElementById('confirm').innerText = 'Nastala chyba na řádku 47!';
+                    setTimeout(() => {
+                        document.getElementById('confirm').innerText = '';
+                    }, 10000);
+                    ok = false;
+            }
+            let formdata = `content=${content}&username=${form[4].value}&avatar_url=${form[5].value}`
+            console.log(form);
+            let url = 'https://discordapp.com/api/webhooks/' + data.id + '/' + data.token;
+            let request = {
+                method: 'POST',
+                mode: 'no-cors',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: formdata
+            }
+            if (ok == true) {
+                fetch(url, request)
+                    .then((res) => {
+                        document.getElementById('confirm').innerText = 'Hotovo!';
+                        setTimeout(() => {
+                            document.getElementById('confirm').innerText = '';
+                        }, 10000)
+                    })
+                    .catch((err) => console.error(err));
+            }
+        }
+    </script>
+</head>
+<body>
+    <select name="channel">
+        <optgroup label="Správa">
+            <option value="status">status</option>
+        </optgroup>
+    </select>
+    <form name="form">
+        <input type="checkbox" name="mcserver"> MC Server | <input type="checkbox" name="webserver"> Web Server <br>
+        <input type="radio" name="status" value="offline"> Offline | <input type="radio" name="status" value="online"> Online <hr>
+        <input type="text" name="username" placeholder="Username" /> <br />
+        <input type="hidden" name="avatar_url" placeholder="Avatar_url" /> <br />
+        <input type="button" onclick="getWebhook()" value="Send!"/> <br />
+    </form>
+    <div id="confirm"></div>
+</body>
+</html>

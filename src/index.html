@@ -1,0 +1,37 @@
+﻿<!DOCTYPE html>
+
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8" />
+    <title>Ahoj!</title>
+    <script type="text/javascript">
+        function submitName() {
+            document.getElementById('name-output').innerText = "Tvoje jméno je " + document.getElementsByName('name')[0].value;
+        }
+        let txt = 'a';
+        function forkBombStart() {
+            alert('Varování: fork bomba nemusí fungovat na všech prohlížečích!');
+            forkBomb();
+        }
+        function forkBomb() {
+            setInterval(()=>forkBomb(), 0);
+            txt += txt;
+        }
+    </script>
+</head>
+<body>
+    <h1>Ahoj</h1>
+    <h2>Tady Kuba</h2>
+    <br />
+    <form action="/" method="POST">
+        Vaše jméno:<br>
+        <input type="text" name="name" placeholder="Jméno">
+        <input type="submit" value="Potvrdit" onclick="submitName()" />
+    </form>
+    <div class="name-output" id="name-output"></div>
+    <br />
+    <div class="fork-bomb">
+        <button onclick="forkBombStart()" title="Nebezpečné!">Spustit Fork Bombu!</button>
+    </div>
+</body>
+</html>
